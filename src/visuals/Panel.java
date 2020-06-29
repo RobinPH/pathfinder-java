@@ -65,10 +65,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
 		
-		graphics.setColor(Color.BLACK);
-		graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
-		graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
-		graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F
+		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
+			graphics.setColor(Color.BLACK);
+			graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
+			graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
+			graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F	
+		}
 	}
 	
 	public JPanel getJPanel() {
@@ -147,8 +149,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case 32:
+				foo.aStar.pathFind();
 				draw();
-				System.out.println(e.getKeyCode());
 				return;
 			default:
 				return;

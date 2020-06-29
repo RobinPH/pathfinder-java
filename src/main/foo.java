@@ -16,10 +16,13 @@ public class foo {
 	private static int CELL_SIZE = 10;
 	public static Map<String, Cell> cells;
 	private static JFrame frame;
+	public static AStar aStar;
 	
 	public static void main(String[] args) {
 		cells = generateCells(WIDTH, HEIGHT);
-		new AStar(cells);
+		aStar = new AStar(cells);
+		
+		
 		try {
 			new PathfindingGUI(cells, 10);
 		} catch (InterruptedException e) {

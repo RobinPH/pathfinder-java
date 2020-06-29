@@ -13,6 +13,7 @@ public class Cell {
 	private double gCost;
 	private double hCost;
 	private List<Cell> neighbors;
+	private Cell parent;
 	
 	public Cell(int x, int y, CellType cellType) {
 		this.x = x;
@@ -33,7 +34,7 @@ public class Cell {
 	}
 	
 	public void setHCost(Cell targetNode) {
-		this.hCost = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+		this.hCost = Math.hypot(targetNode.x - 1 - this.x, targetNode.y - 1 - this.y);
 	}
 	
 	public double getGCost() {
@@ -52,18 +53,52 @@ public class Cell {
 		return getColor(getHexColor());
 	}
 	
-	public List<Cell> getNeighbors() {
+	public List<Cell> getNeighbors(Cell targetNode) {
 		List<Cell> neighbors = new ArrayList<Cell>();
 		
 		for (int i = this.y - 1; i <= this.y + 1; i++) {
 			for (int j = this.x - 1; j <= this.x + 1; j++) {
 				if (i == this.y && j == this.x) continue;
-				neighbors.add(foo.cells.get(foo.positionToKey(j, i)));
+				if (i < 0 || i >= 10) continue; // 10 NEEDS CHANGE
+				if (j < 0 || j >= 10) continue; // 10 NEEDS CHANGE
+				Cell neighbor = foo.cells.get(foo.positionToKey(j, i));
+				if (neighbor.getCellType() == CellType.WALL) continue;
+				
+				neighbors.add(neighbor);
+				
+				double newGCost = this.getGCost() + Math.hypot(this.x - neighbor.getX(), this.y - neighbor.getY());
+				
+				if (neighbor.getParent() == null) {
+					neighbor.setParent(this);
+					neighbor.setHCost(targetNode);
+				} else {
+					double gScore = neighbor.getGCost();
+					double hScore = neighbor.getHCost();
+					double fScore = neighbor.getFCost();
+					if (fScore > hScore + this.getGCost()) {
+						neighbor.setParent(this);
+					} else if (fScore == hScore + this.getGCost()) {
+						if (gScore > newGCost) {
+							neighbor.setParent(this);
+						}
+					}
+				}
 			}
 		}
 		
 		this.neighbors = neighbors;
 		return this.neighbors;
+	}
+	
+	public void setParent(Cell parent) {
+		double newGCost = parent.getGCost() + Math.hypot(parent.getX() - this.getX(), parent.getY() - this.getY());
+		
+		this.setGCost(newGCost);
+		this.parent = parent;
+	}
+	
+	public Cell getParent() {
+		return this.parent;
 	}
 	
 	public CellType getCellType() {
@@ -103,7 +138,10 @@ public class Cell {
 	public void changeType(CellType cellType) {
 		if (this.cellType == CellType.STARTING_NODE) return;
 		if (this.cellType == CellType.TARGET_NODE) return;
-		
+		if (cellType == CellType.WALL ) {
+			this.setGCost(0);
+			this.hCost = Double.MAX_VALUE;
+		}
 		this.cellType = cellType;
 	}
 }
