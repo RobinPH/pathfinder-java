@@ -17,6 +17,7 @@ public class foo {
 	public static Map<String, Cell> cells;
 	private static JFrame frame;
 	public static AStar aStar;
+	public static boolean allowedDiagonals = true;
 	
 	public static void main(String[] args) {
 		cells = generateCells();

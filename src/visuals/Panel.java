@@ -88,7 +88,6 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 		String key = foo.positionToKey(cellX, cellY);
-		System.out.println(key);
 		
 		try {
 			cells.get(key).changeType(CellType.WALL);
@@ -111,7 +110,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 		String key = foo.positionToKey(cellX, cellY);
-		System.out.println(key);
+		
 		try {
 			cells.get(key).changeType(CellType.WALL);
 			draw();

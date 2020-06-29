@@ -64,6 +64,7 @@ public class Cell {
 				if (i < 0 || i >= HEIGHT) continue;
 				if (j < 0 || j >= WIDTH) continue;
 				Cell neighbor = foo.cells.get(foo.positionToKey(j, i));
+				if (!foo.allowedDiagonals && Math.abs(this.x - neighbor.getX() + this.y - neighbor.getY()) == 2) continue;
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				
 				neighbors.add(neighbor);
