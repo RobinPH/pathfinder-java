@@ -20,7 +20,9 @@ import data.CellType;
 public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
 	private Graphics graphics;
 	private Map<String, Cell> cells = foo.cells;
-	private int cellSize = 50;
+	private int cellSize = foo.CELL_SIZE;
+	private int WIDTH = foo.WIDTH;
+	private int HEIGHT = foo.HEIGHT;
 	
 	public Panel() {
 		addMouseListener(this);
@@ -65,16 +67,16 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
 		
-		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
-			graphics.setColor(Color.BLACK);
-			graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
-			graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
-			graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F	
-		}
+//		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
+//			graphics.setColor(Color.BLACK);
+//			graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
+//			graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
+//			graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F	
+//		}
 	}
 	
 	public JPanel getJPanel() {
-		setPreferredSize(new Dimension(cellSize * 10 + (10 + 1) * 2 -1, cellSize * 10 + (10 + 1) * 2 - 1));
+		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 -1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1));
 		return this;
 	}
 
@@ -86,6 +88,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 		String key = foo.positionToKey(cellX, cellY);
+		System.out.println(key);
 		
 		try {
 			cells.get(key).changeType(CellType.WALL);
@@ -108,7 +111,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 		String key = foo.positionToKey(cellX, cellY);
-		
+		System.out.println(key);
 		try {
 			cells.get(key).changeType(CellType.WALL);
 			draw();

@@ -14,12 +14,8 @@ import data.Cell;
 @SuppressWarnings("serial")
 public class PathfindingGUI extends JFrame {
 	private Map<String, Cell> cells;
-	private int cellSize;
 	
-	public PathfindingGUI(Map<String, Cell> cells, int cellSize) throws InterruptedException {
-		this.cells = cells;
-		this.cellSize = cellSize;
-		
+	public PathfindingGUI(Map<String, Cell> cells) throws InterruptedException {
 		Panel panel = new Panel();
 		add(panel.getJPanel(), BorderLayout.CENTER);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

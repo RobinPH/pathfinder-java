@@ -13,6 +13,7 @@ public class AStar {
 	private Cell target;
 	private List<Cell> openCells = new ArrayList<Cell>();
 	private List<Cell> closedCells = new ArrayList<Cell>();
+	private Boolean found = false;
 	
 	public AStar(Map<String, Cell> cells) {
 		this.cells = cells;
@@ -29,34 +30,34 @@ public class AStar {
 		
 		openCells.add(start);
 		closedCells.add(target);
-		
-		for (int i = 0; i < 2; i++)
-			pathFind();
 	}
 	
 	public void pathFind() {
-		Cell checkingCell = getLowestFScore();
-		
-		System.out.println(checkingCell.getX());
-		System.out.println(checkingCell.getY());
+		while (!found) {
+			Cell checkingCell = getLowestFScore();
 
-		List<Cell> currentNeighbors = checkingCell.getNeighbors(target);
-		
-		for (Cell neighbor : currentNeighbors) {
-			if (neighbor.getCellType() == CellType.TARGET_NODE) {
-				Cell backtracking = neighbor;
-//				while (backtracking.getParent().getCellType() != CellType.STARTING_NODE) {
-//					backtracking.changeType(CellType.PATH);
-//					backtracking = backtracking.getParent();
-//				}
-			}
-			if (neighbor.getCellType() == CellType.EMPTY) {
-				neighbor.changeType(CellType.OPEN);
-				openCells.add(neighbor);
+			List<Cell> currentNeighbors = checkingCell.getNeighbors(target);
+			
+			for (Cell neighbor : currentNeighbors) {
+				if (neighbor.getCellType() == CellType.TARGET_NODE) {
+					Cell parent = neighbor.getParent();
+					found = true;
+					while (parent.getCellType() != CellType.STARTING_NODE) {
+						parent.changeType(CellType.PATH);
+						parent = parent.getParent();
+					}
+					break;
+//					while (backtracking.getParent().getCellType() != CellType.STARTING_NODE) {
+//						backtracking.changeType(CellType.PATH);
+//						backtracking = backtracking.getParent();
+//					}
+				}
+				if (neighbor.getCellType() == CellType.EMPTY) {
+					neighbor.changeType(CellType.OPEN);
+					openCells.add(neighbor);
+				}
 			}
 		}
-		
-		checkingCell.changeType(CellType.CLOSE);
 	}
 	
 	public Cell getLowestFScore() {
@@ -79,6 +80,7 @@ public class AStar {
 		
 		this.openCells.remove(lowest);
 		this.closedCells.add(lowest);
+		lowest.changeType(CellType.CLOSE);
 		return lowest;
 	}
 }

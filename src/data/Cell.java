@@ -14,6 +14,8 @@ public class Cell {
 	private double hCost;
 	private List<Cell> neighbors;
 	private Cell parent;
+	private int WIDTH = foo.WIDTH;
+	private int HEIGHT = foo.HEIGHT;
 	
 	public Cell(int x, int y, CellType cellType) {
 		this.x = x;
@@ -34,7 +36,7 @@ public class Cell {
 	}
 	
 	public void setHCost(Cell targetNode) {
-		this.hCost = Math.hypot(targetNode.x - 1 - this.x, targetNode.y - 1 - this.y);
+		this.hCost = Math.hypot(targetNode.x - this.x, targetNode.y - this.y);
 	}
 	
 	public double getGCost() {
@@ -59,8 +61,8 @@ public class Cell {
 		for (int i = this.y - 1; i <= this.y + 1; i++) {
 			for (int j = this.x - 1; j <= this.x + 1; j++) {
 				if (i == this.y && j == this.x) continue;
-				if (i < 0 || i >= 10) continue; // 10 NEEDS CHANGE
-				if (j < 0 || j >= 10) continue; // 10 NEEDS CHANGE
+				if (i < 0 || i >= HEIGHT) continue;
+				if (j < 0 || j >= WIDTH) continue;
 				Cell neighbor = foo.cells.get(foo.positionToKey(j, i));
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				

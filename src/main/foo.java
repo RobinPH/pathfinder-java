@@ -11,32 +11,32 @@ import data.CellType;
 import visuals.PathfindingGUI;
 
 public class foo {
-	private static int HEIGHT = 10;
-	private static int WIDTH = 10;
-	private static int CELL_SIZE = 10;
+	public static int HEIGHT = 20;
+	public static int WIDTH = 20;
+	public static int CELL_SIZE = 20;
 	public static Map<String, Cell> cells;
 	private static JFrame frame;
 	public static AStar aStar;
 	
 	public static void main(String[] args) {
-		cells = generateCells(WIDTH, HEIGHT);
+		cells = generateCells();
 		aStar = new AStar(cells);
 		
 		
 		try {
-			new PathfindingGUI(cells, 10);
+			new PathfindingGUI(cells);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static Map<String, Cell> generateCells(int width, int height) {
+	public static Map<String, Cell> generateCells() {
 		Map<String, Cell> cells = new HashMap<>();
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
+		for (int i = 0; i < HEIGHT; i++) {
+			for (int j = 0; j < WIDTH; j++) {
 				Cell temp = new Cell(j, i, CellType.EMPTY);
 				if (i == 2 && j == 2) temp.changeType(CellType.STARTING_NODE);
-				if (i == 8 && j == 8) temp.changeType(CellType.TARGET_NODE);
+				if (i == 12 && j == 17) temp.changeType(CellType.TARGET_NODE);
 				cells.put(positionToKey(j, i), temp);
 			}
 		}
@@ -47,6 +47,6 @@ public class foo {
 		String _x = Integer.toString(x);
 		String _y = Integer.toString(y);
 		
-		return _x.concat(_y);
+		return _x.concat("-").concat(_y);
 	}
 }
