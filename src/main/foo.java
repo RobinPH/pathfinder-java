@@ -1,11 +1,11 @@
 package main;
 
-import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
+import algorithms.AStar;
 import data.Cell;
 import data.CellType;
 import visuals.PathfindingGUI;
@@ -19,15 +19,21 @@ public class foo {
 	
 	public static void main(String[] args) {
 		cells = generateCells(WIDTH, HEIGHT);
-		new PathfindingGUI(cells, 10);
+		new AStar(cells);
+		try {
+			new PathfindingGUI(cells, 10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static Map<String, Cell> generateCells(int width, int height) {
 		Map<String, Cell> cells = new HashMap<>();
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				
-				Cell temp = new Cell(j, i, CellType.PATH);
+				Cell temp = new Cell(j, i, CellType.EMPTY);
+				if (i == 2 && j == 2) temp.changeType(CellType.STARTING_NODE);
+				if (i == 8 && j == 8) temp.changeType(CellType.TARGET_NODE);
 				cells.put(positionToKey(j, i), temp);
 			}
 		}

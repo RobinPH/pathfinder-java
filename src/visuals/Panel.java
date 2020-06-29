@@ -3,6 +3,8 @@ package visuals;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,7 +17,7 @@ import data.Cell;
 import data.CellType;
 
 @SuppressWarnings("serial")
-public class Panel extends JPanel implements MouseListener, MouseMotionListener {
+public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
 	private Graphics graphics;
 	private Map<String, Cell> cells = foo.cells;
 	private int cellSize = 50;
@@ -23,14 +25,27 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 	public Panel() {
 		addMouseListener(this);
         addMouseMotionListener(this);
+        this.addKeyListener(this);
+        setFocusable(true);
+        requestFocus(); 
+        setUpDrawingGraphics();
 	}
 	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+//	public void paintComponent(Graphics g) {
+//		super.paintComponent(g);
+//	}
+	
+	private void setUpDrawingGraphics() {
+		graphics = getGraphics();
 	}
 	
 	public void draw() {
+        setUpDrawingGraphics();
+        
 		drawAllCell();
+		
+		graphics.dispose();
+		graphics = null;
 	}
 	
 	public void drawAllCell() {
@@ -40,19 +55,20 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 	}
 	
 	public void drawCell(Cell cell) {
-		int x = cell.getX();
-		int y = cell.getY();
+		int x = cell.getX() * (cellSize + 2);
+		int y = cell.getY() * (cellSize + 2);
 		Color cellColor = cell.getColor();
 		
 		graphics.setColor(Color.LIGHT_GRAY);
-		graphics.drawRect(x * (cellSize + 2), y * (cellSize + 2), cellSize + 2, cellSize + 2);
+		graphics.drawRect(x, y, cellSize + 2, cellSize + 2);
 		
 		graphics.setColor(cellColor);
-		graphics.fillRect(x * (cellSize + 2) + 1, y * (cellSize + 2) + 1, cellSize + 1, cellSize + 1);
-	}
-	
-	private void setUpDrawingGraphics() {
-		graphics = getGraphics();
+		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
+		
+		graphics.setColor(Color.BLACK);
+		graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
+		graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
+		graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F
 	}
 	
 	public JPanel getJPanel() {
@@ -71,7 +87,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 		
 		try {
 			cells.get(key).changeType(CellType.WALL);
-			drawAllCell();
+			draw();
 		} catch(Exception e1) {
 			System.out.println(e1);
 		}
@@ -84,7 +100,19 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO
+		int x = e.getX();
+		int y = e.getY();
+		
+		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
+		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
+		String key = foo.positionToKey(cellX, cellY);
+		
+		try {
+			cells.get(key).changeType(CellType.WALL);
+			draw();
+		} catch(Exception e1) {
+			System.out.println(e1);
+		}
 	}
 
 	@Override
@@ -96,8 +124,6 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		graphics.dispose();
-		graphics = null;
 	}
 
 	@Override
@@ -110,5 +136,27 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+			case 32:
+				draw();
+				System.out.println(e.getKeyCode());
+				return;
+			default:
+				return;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
 	}
 }
