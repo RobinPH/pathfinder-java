@@ -38,7 +38,7 @@ public class Pathfinder {
 //		algorithms.get(0).start(this.cells.get());
 		
 		Algorithms foo = new AStar();
-		foo.setAllowedDiagonals(true);
+		foo.setAllowedDiagonals(false);
 		foo.start(this.cells);
 	}
 	

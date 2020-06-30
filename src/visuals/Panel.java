@@ -26,6 +26,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private Cell cellPressed;
 	private boolean rendered = false;
 	private Cell prevDraggedCell;
+	private boolean isDeletingWall = false;
+	private boolean isCreatingWall = false;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -123,32 +125,36 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 			int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 			int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 			
-			if (this.cellPressed.getCellType() == CellType.STARTING_NODE) {
-				if (this.prevDraggedCell != null) {
-					if (this.prevDraggedCell.getX() == cellX && this.prevDraggedCell.getY() == cellY)
-						return;
-				}
+			Cell currentCell = p.getCells().getCell(cellX, cellY);
+			CellType currentCellType = this.cellPressed.getCellType();
+			
+			if (this.prevDraggedCell != null) {
+				if (this.prevDraggedCell.getX() == cellX && this.prevDraggedCell.getY() == cellY)
+					return;
+			}
+			
+			if (currentCellType == CellType.STARTING_NODE) {
 				
 				if (p.getCells().changeStartingNode(cellX, cellY)) {
-					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					this.cellPressed = currentCell;
 					if (rendered) p.algoStart();
 					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
-			} else if (this.cellPressed.getCellType() == CellType.TARGET_NODE) {
+			} else if (currentCellType == CellType.TARGET_NODE) {
 				if (p.getCells().changeTargetNode(cellX, cellY)) {
-					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					this.cellPressed = currentCell;
 					if (rendered) p.algoStart();
 					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
+			} else if (p.getCells().getCell(cellX, cellY).getCellType() == CellType.WALL && this.isDeletingWall) {
+				currentCell.changeType(CellType.EMPTY, false);
+				drawCell(currentCell);
 			} else {
-				try {
-					Map<String, Cell> cells = p.getCells().get();
-					cells.get(key).changeType(CellType.WALL, false);
-					draw();
-				} catch(Exception e1) {
-					System.out.println(e1);
+				if (this.isCreatingWall) {
+					currentCell.changeType(CellType.WALL, false);
+					drawCell(currentCell);
 				}
 			}
 		}
@@ -177,6 +183,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		this.mousePressed = true;
 		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
 		
+		if (p.getCells().getCell(getKeyByEvent(e)).getCellType() == CellType.WALL) {
+			this.isDeletingWall = true;
+		} else {
+			this.isCreatingWall = true;
+		}
+		
 		setUpDrawingGraphics();
 	}
 
@@ -186,6 +198,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		this.mousePressed = false;
 		this.mouseDragging = false;
 		this.cellPressed = null;
+		this.isCreatingWall = false;
+		this.isDeletingWall = false;
 	}
 
 	@Override
