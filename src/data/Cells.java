@@ -25,7 +25,7 @@ public class Cells {
 			for (int j = 0; j < this.width; j++) {
 				Cell temp = new Cell(j, i, CellType.EMPTY);
 				if (i == 0 && j == 0) temp.changeType(CellType.STARTING_NODE, false);
-				if (i == 12 && j == 13) temp.changeType(CellType.TARGET_NODE, false);
+				if (i == 4 && j == 4) temp.changeType(CellType.TARGET_NODE, false);
 				cells.put(positionToKey(j, i), temp);
 			}
 		}
@@ -38,7 +38,7 @@ public class Cells {
 		
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
-			if (cellType == CellType.STARTING_NODE)
+			if (cellType != CellType.TARGET_NODE)
 				cell.changeType(CellType.EMPTY, true);
 			
 			if (x == cell.getX() && y == cell.getY())
@@ -55,7 +55,7 @@ public class Cells {
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
 			
-			if (cellType == CellType.TARGET_NODE)
+			if (cellType != CellType.STARTING_NODE)
 				cell.changeType(CellType.EMPTY, true);
 			
 			if (x == cell.getX() && y == cell.getY())
@@ -82,5 +82,13 @@ public class Cells {
 	
 	public Cell getCell(String key) {
 		return cells.get(key);
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
 	}
 }

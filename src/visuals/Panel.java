@@ -24,6 +24,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private boolean mousePressed = false;
 	private boolean mouseDragging = false;
 	private Cell cellPressed;
+	private boolean rendered = false;
+	private Cell prevDraggedCell;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -70,7 +72,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
-		
+//		
 		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE && cell.getCellType() != CellType.STARTING_NODE) {
 			graphics.setColor(Color.BLACK);
 			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 - 10); //G
@@ -113,13 +115,22 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 			int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 			
 			if (this.cellPressed.getCellType() == CellType.STARTING_NODE) {
+				if (this.prevDraggedCell != null) {
+					if (this.prevDraggedCell.getX() == cellX && this.prevDraggedCell.getY() == cellY)
+						return;
+				}
+				
 				if (p.getCells().changeStartingNode(cellX, cellY)) {
 					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					if (rendered) p.algoStart();
+					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
 			} else if (this.cellPressed.getCellType() == CellType.TARGET_NODE) {
 				if (p.getCells().changeTargetNode(cellX, cellY)) {
 					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					if (rendered) p.algoStart();
+					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
 			}
@@ -158,11 +169,6 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
 		
 		setUpDrawingGraphics();
-		String key = getKeyByEvent(e);
-		
-		if (p.getCells().getCell(key).getCellType() == CellType.STARTING_NODE && this.mousePressed) {
-			System.out.println("Starting");
-		}
 	}
 
 	@Override
@@ -196,6 +202,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 			case 32:
 				p.algoStart();
 				draw();
+				this.rendered = true;
 				return;
 			default:
 				return;

@@ -6,10 +6,11 @@ import java.util.Map;
 
 import data.Cell;
 import data.CellType;
+import data.Cells;
 import main.foo;
 
 public class AStar implements Algorithms {
-	private Map<String, Cell> cells;
+	private Cells cells;
 	private Cell start;
 	private Cell target;
 	private List<Cell> openCells = new ArrayList<Cell>();
@@ -17,15 +18,17 @@ public class AStar implements Algorithms {
 	private Boolean found = false;
 	private boolean allowedDiagonals;
 	
-	public void start(Map<String, Cell> cells) {
+	public void start(Cells cells) {
+		this.cells = cells;
 		assignVariables(cells);
 		pathFind();
 	}
 	
-	public void assignVariables(Map<String, Cell> cells) {
+	public void assignVariables(Cells cells) {
 		this.cells = cells;
+		Map<String, Cell> _cells = this.cells.get();
 		
-		for (Cell cell : this.cells.values()) {
+		for (Cell cell : _cells.values()) {
 			if (cell.getCellType() == CellType.STARTING_NODE) start = cell;
 			if (cell.getCellType() == CellType.TARGET_NODE) target = cell;
 		}

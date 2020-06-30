@@ -15,8 +15,6 @@ public class Cell {
 	private double hCost;
 	private List<Cell> neighbors;
 	private Cell parent;
-	private int WIDTH = foo.WIDTH;
-	private int HEIGHT = foo.HEIGHT;
 	
 	public Cell(int x, int y, CellType cellType) {
 		this.x = x;
@@ -61,17 +59,16 @@ public class Cell {
 		this.y = y;
 	}
 	
-	public List<Cell> getNeighbors(Map<String, Cell> cells, Cell targetNode, boolean allowedDiagonals) {
+	public List<Cell> getNeighbors(Cells cells, Cell targetNode, boolean allowedDiagonals) {
 		List<Cell> neighbors = new ArrayList<Cell>();
 		
 		for (int i = this.y - 1; i <= this.y + 1; i++) {
 			for (int j = this.x - 1; j <= this.x + 1; j++) {
 				if (i == this.y && j == this.x) continue;
-				if (i < 0 || i >= HEIGHT) continue;
-				if (j < 0 || j >= WIDTH) continue;
+				if (i < 0 || i >= cells.getHeight()) continue;
+				if (j < 0 || j >= cells.getWidth()) continue;
 				if (!allowedDiagonals && Math.abs(j - this.x) + Math.abs(i - this.y) == 2) continue;
-				Cell neighbor = cells.get(Cells.positionToKey(j, i));
-				
+				Cell neighbor = cells.get().get(Cells.positionToKey(j, i));
 				
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				
@@ -88,6 +85,10 @@ public class Cell {
 		
 		this.setGCost(newGCost);
 		this.parent = parent;
+	}
+	
+	public void removeParent() {
+		this.parent = null;
 	}
 	
 	public Cell getParent() {
@@ -134,6 +135,12 @@ public class Cell {
 		if (cellType == CellType.WALL ) {
 			this.setGCost(0);
 			this.hCost = Double.MAX_VALUE;
+		}
+		
+		if (cellType == CellType.EMPTY) {
+//			this.setGCost((Double) null);
+//			this.setHCost((Double) null);
+			this.removeParent();
 		}
 		this.cellType = cellType;
 	}

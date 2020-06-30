@@ -1,11 +1,9 @@
 package algorithms;
 
-import java.util.Map;
-
-import data.Cell;
+import data.Cells;
 
 public interface Algorithms {
-	public void start(Map<String, Cell> cells);
+	public void start(Cells cells);
 
 	public void setAllowedDiagonals(boolean b);
 }

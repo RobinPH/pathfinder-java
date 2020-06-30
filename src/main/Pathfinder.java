@@ -18,8 +18,7 @@ public class Pathfinder {
 	private int CELL_SIZE;
 	private Cells cells;
 	private boolean allowedDiagonals = false;
-	private List<Algorithms> algorithms = new ArrayList<Algorithms>();
-	
+
 	public Pathfinder(int width, int height, int cellSize) throws InterruptedException {
 		this.WIDTH = width;
 		this.HEIGHT = height;
@@ -32,9 +31,13 @@ public class Pathfinder {
 	}
 	
 	public void algoStart() {
-		algorithms.add(new AStar());
-		algorithms.get(0).setAllowedDiagonals(false);
-		algorithms.get(0).start(this.cells.get());
+//		algorithms.add(new AStar());
+//		algorithms.get(0).setAllowedDiagonals(false);
+//		algorithms.get(0).start(this.cells.get());
+		
+		Algorithms foo = new AStar();
+		foo.setAllowedDiagonals(true);
+		foo.start(this.cells);
 	}
 	
 	public Cells getCells() {
