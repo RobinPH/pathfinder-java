@@ -51,19 +51,23 @@ public class AStar implements Algorithms {
 			for (Cell neighbor : currentNeighbors) {
 				double newGCost = checkingCell.getGCost() + Math.hypot(checkingCell.getX() - neighbor.getX(), checkingCell.getY() - neighbor.getY());
 				double newHCost = this.allowedDiagonals ? Math.hypot(target.getX() - neighbor.getX(), target.getY() - neighbor.getY()) : Math.abs(checkingCell.getX() - target.getX()) + Math.abs(checkingCell.getY() - target.getY()) - 1;
+				
 				if (neighbor.getParent() == null) {
 					neighbor.setParent(checkingCell);
 					neighbor.setHCost(newHCost);
 					neighbor.setGCost(newGCost);
+					
 				} else {
 					double gCost = neighbor.getGCost();
 					double hCost = neighbor.getHCost();
 					double fCost = neighbor.getFCost();
-					if (fCost > hCost + checkingCell.getGCost()) {
+					double newFCost = hCost + newGCost;
+					
+					if (fCost > newFCost) {
 						neighbor.setParent(checkingCell);
 						neighbor.setGCost(newGCost);
 						
-					} else if (fCost == hCost + checkingCell.getGCost()) {
+					} else if (fCost == newFCost) {
 						if (gCost > newGCost)
 						{
 							neighbor.setParent(checkingCell);
