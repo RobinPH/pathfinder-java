@@ -142,14 +142,14 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
-			}
-		} else {
-			try {
-				Map<String, Cell> cells = p.getCells().get();
-				cells.get(key).changeType(CellType.WALL, false);
-				draw();
-			} catch(Exception e1) {
-				System.out.println(e1);
+			} else {
+				try {
+					Map<String, Cell> cells = p.getCells().get();
+					cells.get(key).changeType(CellType.WALL, false);
+					draw();
+				} catch(Exception e1) {
+					System.out.println(e1);
+				}
 			}
 		}
 	}

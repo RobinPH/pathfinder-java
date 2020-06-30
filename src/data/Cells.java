@@ -38,7 +38,7 @@ public class Cells {
 		
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
-			if (cellType != CellType.TARGET_NODE)
+			if (cellType != CellType.TARGET_NODE && cellType != CellType.WALL)
 				cell.changeType(CellType.EMPTY, true);
 			
 			if (x == cell.getX() && y == cell.getY())
@@ -55,7 +55,7 @@ public class Cells {
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
 			
-			if (cellType != CellType.STARTING_NODE)
+			if (cellType != CellType.STARTING_NODE && cellType != CellType.WALL)
 				cell.changeType(CellType.EMPTY, true);
 			
 			if (x == cell.getX() && y == cell.getY())
