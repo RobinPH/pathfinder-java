@@ -3,6 +3,7 @@ package data;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import main.foo;
 
@@ -55,7 +56,7 @@ public class Cell {
 		return getColor(getHexColor());
 	}
 	
-	public List<Cell> getNeighbors(Cell targetNode) {
+	public List<Cell> getNeighbors(Map<String, Cell> cells, Cell targetNode, boolean allowedDiagonals) {
 		List<Cell> neighbors = new ArrayList<Cell>();
 		
 		for (int i = this.y - 1; i <= this.y + 1; i++) {
@@ -63,9 +64,9 @@ public class Cell {
 				if (i == this.y && j == this.x) continue;
 				if (i < 0 || i >= HEIGHT) continue;
 				if (j < 0 || j >= WIDTH) continue;
-				Cell neighbor = foo.cells.get(foo.positionToKey(j, i));
+				if (!allowedDiagonals && Math.abs(j - this.x) + Math.abs(i - this.y) == 2) continue;
+				Cell neighbor = cells.get(Cells.positionToKey(j, i));
 				
-				if (!foo.allowedDiagonals && Math.abs(j - this.x) + Math.abs(i - this.y) == 2) continue;
 				
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				

@@ -8,23 +8,22 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Map;
 
 import javax.swing.JPanel;
 
-import main.foo;
+import main.Pathfinder;
 import data.Cell;
 import data.CellType;
+import data.Cells;
 
 @SuppressWarnings("serial")
 public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
 	private Graphics graphics;
-	private Map<String, Cell> cells = foo.cells;
-	private int cellSize = foo.CELL_SIZE;
-	private int WIDTH = foo.WIDTH;
-	private int HEIGHT = foo.HEIGHT;
+	private Pathfinder p;
 	
-	public Panel() {
+	public Panel(Pathfinder p) {
+		this.p = p;
+		
 		addMouseListener(this);
         addMouseMotionListener(this);
         this.addKeyListener(this);
@@ -51,12 +50,13 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	}
 	
 	public void drawAllCell() {
-		for (Cell cell : cells.values()) {
+		for (Cell cell : p.getCells().values()) {
 			drawCell(cell);
 		}
 	}
 	
 	public void drawCell(Cell cell) {
+		int cellSize = p.getCellSize();
 		int x = cell.getX() * (cellSize + 2);
 		int y = cell.getY() * (cellSize + 2);
 		Color cellColor = cell.getColor();
@@ -67,7 +67,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
 		
-		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE) {
+		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE && cell.getCellType() != CellType.STARTING_NODE) {
 			graphics.setColor(Color.BLACK);
 			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 - 10); //G
 			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2); //H
@@ -76,6 +76,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	}
 	
 	public JPanel getJPanel() {
+		int cellSize = p.getCellSize();
+		int WIDTH = p.getWidth();
+		int HEIGHT = p.getHeight();
 		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 -1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1));
 		return this;
 	}
@@ -84,13 +87,14 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void mouseDragged(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
+		int cellSize = p.getCellSize();
 		
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
-		String key = foo.positionToKey(cellX, cellY);
+		String key = Cells.positionToKey(cellX, cellY);
 		
 		try {
-			cells.get(key).changeType(CellType.WALL);
+			p.getCells().get(key).changeType(CellType.WALL);
 			draw();
 		} catch(Exception e1) {
 			System.out.println(e1);
@@ -106,13 +110,14 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
+		int cellSize = p.getCellSize();
 		
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
-		String key = foo.positionToKey(cellX, cellY);
+		String key = Cells.positionToKey(cellX, cellY);
 		
 		try {
-			cells.get(key).changeType(CellType.WALL);
+			p.getCells().get(key).changeType(CellType.WALL);
 			draw();
 		} catch(Exception e1) {
 			System.out.println(e1);
@@ -151,7 +156,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case 32:
-				foo.aStar.pathFind();
+				p.algoStart();
 				draw();
 				return;
 			default:

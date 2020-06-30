@@ -10,13 +10,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import data.Cell;
+import main.Pathfinder;
 
 @SuppressWarnings("serial")
 public class PathfindingGUI extends JFrame {
-	private Map<String, Cell> cells;
-	
-	public PathfindingGUI(Map<String, Cell> cells) throws InterruptedException {
-		Panel panel = new Panel();
+	public PathfindingGUI(Pathfinder p) throws InterruptedException {
+		Panel panel = new Panel(p);
 		add(panel.getJPanel(), BorderLayout.CENTER);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Pathfinding Visualizer");

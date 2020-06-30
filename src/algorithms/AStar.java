@@ -8,13 +8,14 @@ import data.Cell;
 import data.CellType;
 import main.foo;
 
-public class AStar {
+public class AStar implements Algorithms {
 	private Map<String, Cell> cells;
 	private Cell start;
 	private Cell target;
 	private List<Cell> openCells = new ArrayList<Cell>();
 	private List<Cell> closedCells = new ArrayList<Cell>();
 	private Boolean found = false;
+	private boolean allowedDiagonals;
 	
 	public AStar(Map<String, Cell> cells) {
 		this.cells = cells;
@@ -33,15 +34,15 @@ public class AStar {
 		closedCells.add(target);
 	}
 	
-	public void pathFind() {
+	public void start() {
 		while (!found) {
 			Cell checkingCell = getLowestFScore();
 
-			List<Cell> currentNeighbors = checkingCell.getNeighbors(target);
+			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, target, this.allowedDiagonals);
 			
 			for (Cell neighbor : currentNeighbors) {
 				double newGCost = checkingCell.getGCost() + Math.hypot(checkingCell.getX() - neighbor.getX(), checkingCell.getY() - neighbor.getY());
-				double newHCost = foo.allowedDiagonals ? Math.hypot(target.getX() - neighbor.getX(), target.getY() - neighbor.getY()) : Math.abs(checkingCell.getX() - neighbor.getX()) + Math.abs(checkingCell.getY() - neighbor.getY()) - 1;
+				double newHCost = this.allowedDiagonals ? Math.hypot(target.getX() - neighbor.getX(), target.getY() - neighbor.getY()) : Math.abs(checkingCell.getX() - target.getX()) + Math.abs(checkingCell.getY() - target.getY()) - 1;
 				if (neighbor.getParent() == null) {
 					neighbor.setParent(checkingCell);
 					neighbor.setHCost(newHCost);
@@ -111,5 +112,10 @@ public class AStar {
 		this.closedCells.add(lowest);
 		lowest.changeType(CellType.CLOSE);
 		return lowest;
+	}
+
+	@Override
+	public void setAllowedDiagonals(boolean b) {
+		this.allowedDiagonals = b;
 	}
 }
