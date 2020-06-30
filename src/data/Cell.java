@@ -35,8 +35,8 @@ public class Cell {
 		this.gCost = gCost;
 	}
 	
-	public void setHCost(Cell targetNode) {
-		this.hCost = Math.hypot(targetNode.x - this.x, targetNode.y - this.y);
+	public void setHCost(double hCost) {
+		this.hCost = hCost;
 	}
 	
 	public double getGCost() {
@@ -64,28 +64,12 @@ public class Cell {
 				if (i < 0 || i >= HEIGHT) continue;
 				if (j < 0 || j >= WIDTH) continue;
 				Cell neighbor = foo.cells.get(foo.positionToKey(j, i));
-				if (!foo.allowedDiagonals && Math.abs(this.x - neighbor.getX() + this.y - neighbor.getY()) == 2) continue;
+				
+				if (!foo.allowedDiagonals && Math.abs(j - this.x) + Math.abs(i - this.y) == 2) continue;
+				
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				
 				neighbors.add(neighbor);
-				
-				double newGCost = this.getGCost() + Math.hypot(this.x - neighbor.getX(), this.y - neighbor.getY());
-				
-				if (neighbor.getParent() == null) {
-					neighbor.setParent(this);
-					neighbor.setHCost(targetNode);
-				} else {
-					double gScore = neighbor.getGCost();
-					double hScore = neighbor.getHCost();
-					double fScore = neighbor.getFCost();
-					if (fScore > hScore + this.getGCost()) {
-						neighbor.setParent(this);
-					} else if (fScore == hScore + this.getGCost()) {
-						if (gScore > newGCost) {
-							neighbor.setParent(this);
-						}
-					}
-				}
 			}
 		}
 		

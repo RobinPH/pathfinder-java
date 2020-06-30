@@ -67,12 +67,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
 		
-//		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
-//			graphics.setColor(Color.BLACK);
-//			graphics.drawString(Double.toString(cell.getGCost()), x + cellSize / 2 - 15, y + cellSize / 2 - 15); //G
-//			graphics.drawString(Double.toString(cell.getHCost()), x + cellSize / 2 - 15, y + cellSize / 2); //H
-//			graphics.drawString(Double.toString(cell.getFCost()), x + cellSize / 2 - 15, y + cellSize / 2 + 15); //F	
-//		}
+		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE) {
+			graphics.setColor(Color.BLACK);
+			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 - 10); //G
+			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2); //H
+			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 + 10); //F	
+		}
 	}
 	
 	public JPanel getJPanel() {
