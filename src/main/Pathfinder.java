@@ -32,14 +32,10 @@ public class Pathfinder {
 		PathfindingGUI gui = new PathfindingGUI(this);
 	}
 	
-	public void algoStart() {
-//		algorithms.add(new AStar());
-//		algorithms.get(0).setAllowedDiagonals(false);
-//		algorithms.get(0).start(this.cells.get());
-		
-		Algorithms foo = new AStar();
-		foo.setAllowedDiagonals(false);
-		foo.start(this.cells);
+	public List<Cell> algoStart() {
+		Algorithms algo = new AStar();
+		algo.setAllowedDiagonals(false);
+		return algo.start(this.cells);
 	}
 	
 	public Cells getCells() {

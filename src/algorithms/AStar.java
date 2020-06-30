@@ -17,11 +17,12 @@ public class AStar implements Algorithms {
 	private List<Cell> closedCells = new ArrayList<Cell>();
 	private Boolean found = false;
 	private boolean allowedDiagonals;
+	private List<Cell> cellsToAnimate;
 	
-	public void start(Cells cells) {
+	public List<Cell> start(Cells cells) {
 		this.cells = cells;
 		assignVariables(cells);
-		pathFind();
+		return pathFind();
 	}
 	
 	public void assignVariables(Cells cells) {
@@ -42,9 +43,11 @@ public class AStar implements Algorithms {
 		closedCells.add(target);
 	}
 	
-	public void pathFind() {
+	public List<Cell> pathFind() {
+		cellsToAnimate = new ArrayList<Cell>();
 		while (!found) {
 			Cell checkingCell = getLowestFScore();
+			if (checkingCell != null) changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 
 			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, target, this.allowedDiagonals);
 			
@@ -88,17 +91,28 @@ public class AStar implements Algorithms {
 					}
 					
 					for (Cell c : path) {
-						c.changeType(CellType.PATH, false);
+						changeTypeAndAnimate(c, CellType.PATH);
 					}
 					
 					break;
 				}
 				
 				if (neighbor.getCellType() == CellType.EMPTY) {
-					neighbor.changeType(CellType.OPEN, false);
+					changeTypeAndAnimate(neighbor, CellType.OPEN);
 					openCells.add(neighbor);
 				}
 			}
+		}
+		return this.cellsToAnimate;
+	}
+	
+	public void changeTypeAndAnimate(Cell cell, CellType cellType) {
+		cell.changeType(cellType, false);
+		
+		try {
+			cellsToAnimate.add((Cell) cell.clone());
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -122,7 +136,6 @@ public class AStar implements Algorithms {
 		
 		this.openCells.remove(lowest);
 		this.closedCells.add(lowest);
-		lowest.changeType(CellType.CLOSE, false);
 		return lowest;
 	}
 

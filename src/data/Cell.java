@@ -7,7 +7,7 @@ import java.util.Map;
 
 import main.foo;
 
-public class Cell {
+public class Cell implements Cloneable {
 	private int x;
 	private int y;
 	private CellType cellType;
@@ -138,10 +138,12 @@ public class Cell {
 		}
 		
 		if (cellType == CellType.EMPTY) {
-//			this.setGCost((Double) null);
-//			this.setHCost((Double) null);
 			this.removeParent();
 		}
 		this.cellType = cellType;
 	}
+	
+	public Object clone() throws CloneNotSupportedException { 
+		return super.clone(); 
+	} 
 }

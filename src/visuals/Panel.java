@@ -8,6 +8,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -28,6 +30,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private Cell prevDraggedCell;
 	private boolean isDeletingWall = false;
 	private boolean isCreatingWall = false;
+	private List<Cell> cellToAnimate;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -49,37 +52,32 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	}
 	
 	public void draw() {
-        setUpDrawingGraphics();
-        
-		drawAllCell();
-		
+        new Thread(() -> {
+        	if (this.cellToAnimate == null || !this.doAnimate) {
+    			drawAllCell(p.getCells().get().values(), false);
+    		} else {
+    			drawAllCell(this.cellToAnimate, true);
+    		}
+        }).start();
 		graphics.dispose();
 		graphics = null;
 	}
 	
-	public void drawAllCell() {
-		for (Cell cell : p.getCells().get().values()) {
-			drawCell(cell);
+	public void drawAllCell(Collection<Cell> cells, boolean animated) {
+		setUpDrawingGraphics();
+		for (Cell cell : cells) {
+			drawCell(cell, animated);
 		}
 	}
 	
-	public void drawCell(Cell cell) {
+	public void drawCell(Cell cell, boolean animated) {
 		int cellSize = p.getCellSize();
 		int x = cell.getX() * (cellSize + 2);
 		int y = cell.getY() * (cellSize + 2);
 		Color cellColor = cell.getColor();
-		CellType cellType = cell.getCellType();
 		
 		graphics.setColor(Color.LIGHT_GRAY);
 		graphics.drawRect(x, y, cellSize + 2, cellSize + 2);
-
-		// Disable Display for OPEN & CLOSE Cells
-//		graphics.setColor(cellColor);
-//		if (!p.isOnDebug() && !(cellType == CellType.WALL
-//				|| cellType == CellType.PATH
-//				|| cellType == CellType.STARTING_NODE
-//				|| cellType == CellType.TARGET_NODE))
-//			graphics.setColor(Cell.getColor(Cell.getHexColor(CellType.EMPTY)));
 		
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
@@ -89,6 +87,14 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 - 10); //G
 			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2); //H
 			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 + 10); //F	
+		}
+		
+		if (animated && this.doAnimate) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -137,24 +143,29 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 				
 				if (p.getCells().changeStartingNode(cellX, cellY)) {
 					this.cellPressed = currentCell;
-					if (rendered) p.algoStart();
+					if (rendered) {
+						this.cellToAnimate = p.algoStart();
+					}
 					this.prevDraggedCell = this.cellPressed;
+					this.cellToAnimate = null;
 					draw();
 				}
 			} else if (currentCellType == CellType.TARGET_NODE) {
 				if (p.getCells().changeTargetNode(cellX, cellY)) {
 					this.cellPressed = currentCell;
-					if (rendered) p.algoStart();
+					if (rendered) {
+						this.cellToAnimate = p.algoStart();
+					}
 					this.prevDraggedCell = this.cellPressed;
 					draw();
 				}
 			} else if (p.getCells().getCell(cellX, cellY).getCellType() == CellType.WALL && this.isDeletingWall) {
 				currentCell.changeType(CellType.EMPTY, false);
-				drawCell(currentCell);
+				drawCell(currentCell, false);
 			} else {
 				if (this.isCreatingWall) {
 					currentCell.changeType(CellType.WALL, false);
-					drawCell(currentCell);
+					drawCell(currentCell, false);
 				}
 			}
 		}
@@ -180,6 +191,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if (done) this.doAnimate = false;
 		this.mousePressed = true;
 		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
 		
@@ -194,7 +206,6 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 		this.mousePressed = false;
 		this.mouseDragging = false;
 		this.cellPressed = null;
@@ -218,12 +229,17 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 	}
-
+	public boolean doAnimate = true;
+	public boolean done = false;
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case 32:
-				p.algoStart();
+				if (done) this.doAnimate = false;
+				if(!done) {
+					this.cellToAnimate = p.algoStart();
+					done = true;
+				}
 				draw();
 				this.rendered = true;
 				return;
