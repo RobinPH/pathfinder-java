@@ -52,6 +52,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	}
 	
 	public void draw() {
+		setUpDrawingGraphics();
         new Thread(() -> {
         	if (this.cellToAnimate == null || !this.doAnimate) {
     			drawAllCell(p.getCells().get().values(), false);
@@ -59,12 +60,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
     			drawAllCell(this.cellToAnimate, true);
     		}
         }).start();
-		graphics.dispose();
-		graphics = null;
 	}
 	
 	public void drawAllCell(Collection<Cell> cells, boolean animated) {
-		setUpDrawingGraphics();
 		for (Cell cell : cells) {
 			drawCell(cell, animated);
 		}
@@ -75,6 +73,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int x = cell.getX() * (cellSize + 2);
 		int y = cell.getY() * (cellSize + 2);
 		Color cellColor = cell.getColor();
+		
+		if (graphics == null) return;
 		
 		graphics.setColor(Color.LIGHT_GRAY);
 		graphics.drawRect(x, y, cellSize + 2, cellSize + 2);
@@ -91,7 +91,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (animated && this.doAnimate) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

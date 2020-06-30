@@ -20,6 +20,6 @@ public class foo {
 	public static boolean allowedDiagonals = false;
 	
 	public static void main(String[] args) throws InterruptedException {
-		new Pathfinder(55, 50, 10, false);
+		new Pathfinder(5, 5, 50, false);
 	}
 }

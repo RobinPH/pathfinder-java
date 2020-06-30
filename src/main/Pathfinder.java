@@ -8,6 +8,7 @@ import java.util.Map;
 
 import algorithms.AStar;
 import algorithms.Algorithms;
+import algorithms.DepthFirstSearch;
 import data.Cell;
 import data.Cells;
 import visuals.PathfindingGUI;
@@ -33,7 +34,7 @@ public class Pathfinder {
 	}
 	
 	public List<Cell> algoStart() {
-		Algorithms algo = new AStar();
+		Algorithms algo = new DepthFirstSearch();
 		algo.setAllowedDiagonals(false);
 		return algo.start(this.cells);
 	}

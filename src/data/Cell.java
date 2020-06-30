@@ -15,11 +15,20 @@ public class Cell implements Cloneable {
 	private double hCost;
 	private List<Cell> neighbors;
 	private Cell parent;
+	private boolean visited = false;
 	
 	public Cell(int x, int y, CellType cellType) {
 		this.x = x;
 		this.y = y;
 		this.cellType = cellType;
+	}
+	
+	public void setVisited(boolean b) {
+		this.visited = b;
+	}
+	
+	public boolean isVisited() {
+		return this.visited;
 	}
 
 	public int getX() {
@@ -59,7 +68,7 @@ public class Cell implements Cloneable {
 		this.y = y;
 	}
 	
-	public List<Cell> getNeighbors(Cells cells, Cell targetNode, boolean allowedDiagonals) {
+	public List<Cell> getNeighbors(Cells cells, boolean allowedDiagonals) {
 		List<Cell> neighbors = new ArrayList<Cell>();
 		
 		for (int i = this.y - 1; i <= this.y + 1; i++) {

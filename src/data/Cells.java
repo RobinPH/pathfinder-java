@@ -25,7 +25,7 @@ public class Cells {
 			for (int j = 0; j < this.width; j++) {
 				Cell temp = new Cell(j, i, CellType.EMPTY);
 				if (i == 0 && j == 0) temp.changeType(CellType.STARTING_NODE, false);
-				if (i == 4 && j == 4) temp.changeType(CellType.TARGET_NODE, false);
+				if (i == 2 && j == 2) temp.changeType(CellType.TARGET_NODE, false);
 				cells.put(positionToKey(j, i), temp);
 			}
 		}

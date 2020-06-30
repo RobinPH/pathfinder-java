@@ -20,7 +20,6 @@ public class AStar implements Algorithms {
 	private List<Cell> cellsToAnimate;
 	
 	public List<Cell> start(Cells cells) {
-		this.cells = cells;
 		assignVariables(cells);
 		return pathFind();
 	}
@@ -49,7 +48,7 @@ public class AStar implements Algorithms {
 			Cell checkingCell = getLowestFScore();
 			if (checkingCell != null) changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 
-			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, target, this.allowedDiagonals);
+			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, this.allowedDiagonals);
 			
 			for (Cell neighbor : currentNeighbors) {
 				double newGCost = checkingCell.getGCost() + Math.hypot(checkingCell.getX() - neighbor.getX(), checkingCell.getY() - neighbor.getY());
