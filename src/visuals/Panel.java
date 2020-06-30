@@ -66,14 +66,23 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int x = cell.getX() * (cellSize + 2);
 		int y = cell.getY() * (cellSize + 2);
 		Color cellColor = cell.getColor();
+		CellType cellType = cell.getCellType();
 		
 		graphics.setColor(Color.LIGHT_GRAY);
 		graphics.drawRect(x, y, cellSize + 2, cellSize + 2);
+
+		// Disable Display for OPEN & CLOSE Cells
+//		graphics.setColor(cellColor);
+//		if (!p.isOnDebug() && !(cellType == CellType.WALL
+//				|| cellType == CellType.PATH
+//				|| cellType == CellType.STARTING_NODE
+//				|| cellType == CellType.TARGET_NODE))
+//			graphics.setColor(Cell.getColor(Cell.getHexColor(CellType.EMPTY)));
 		
 		graphics.setColor(cellColor);
 		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
-//		
-		if (cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE && cell.getCellType() != CellType.STARTING_NODE) {
+
+		if (p.isOnDebug() && cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL && cell.getCellType() != CellType.TARGET_NODE && cell.getCellType() != CellType.STARTING_NODE) {
 			graphics.setColor(Color.BLACK);
 			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2 - 10); //G
 			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 10, y + cellSize / 2); //H

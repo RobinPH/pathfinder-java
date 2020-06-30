@@ -18,11 +18,13 @@ public class Pathfinder {
 	private int CELL_SIZE;
 	private Cells cells;
 	private boolean allowedDiagonals = false;
+	private boolean debug = false;
 
-	public Pathfinder(int width, int height, int cellSize) throws InterruptedException {
+	public Pathfinder(int width, int height, int cellSize, boolean debug) throws InterruptedException {
 		this.WIDTH = width;
 		this.HEIGHT = height;
 		this.CELL_SIZE = cellSize;
+		this.debug = debug;
 		
 		Cells cells = new Cells(width, height);
 		this.cells = cells;
@@ -62,5 +64,9 @@ public class Pathfinder {
 	
 	public int getCellSize() {
 		return this.CELL_SIZE;
+	}
+	
+	public boolean isOnDebug() {
+		return this.debug;
 	}
 }
