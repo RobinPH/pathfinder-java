@@ -24,12 +24,45 @@ public class Cells {
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
 				Cell temp = new Cell(j, i, CellType.EMPTY);
-				if (i == 2 && j == 2) temp.changeType(CellType.STARTING_NODE);
-				if (i == 12 && j == 13) temp.changeType(CellType.TARGET_NODE);
+				if (i == 0 && j == 0) temp.changeType(CellType.STARTING_NODE, false);
+				if (i == 12 && j == 13) temp.changeType(CellType.TARGET_NODE, false);
 				cells.put(positionToKey(j, i), temp);
 			}
 		}
 		return cells;
+	}
+	
+	public boolean changeStartingNode(int x, int y) {
+		if (this.getCell(x, y).getCellType() == CellType.TARGET_NODE)
+			return false;
+		
+		for (Cell cell : this.cells.values()) {
+			CellType cellType = cell.getCellType();
+			if (cellType == CellType.STARTING_NODE)
+				cell.changeType(CellType.EMPTY, true);
+			
+			if (x == cell.getX() && y == cell.getY())
+				cell.changeType(CellType.STARTING_NODE, false);
+		}
+		
+		return true;
+	}
+	
+	public boolean changeTargetNode(int x, int y) {
+		if (this.getCell(x, y).getCellType() == CellType.STARTING_NODE)
+			return false;
+		
+		for (Cell cell : this.cells.values()) {
+			CellType cellType = cell.getCellType();
+			
+			if (cellType == CellType.TARGET_NODE)
+				cell.changeType(CellType.EMPTY, true);
+			
+			if (x == cell.getX() && y == cell.getY())
+				cell.changeType(CellType.TARGET_NODE, false);
+		}
+		
+		return true;
 	}
 	
 	public static String positionToKey(int x, int y) {
@@ -41,5 +74,13 @@ public class Cells {
 	
 	public Map<String, Cell> get() {
 		return this.cells;
+	}
+	
+	public Cell getCell(int x, int y) {
+		return cells.get(positionToKey(x, y));
+	}
+	
+	public Cell getCell(String key) {
+		return cells.get(key);
 	}
 }

@@ -17,7 +17,12 @@ public class AStar implements Algorithms {
 	private Boolean found = false;
 	private boolean allowedDiagonals;
 	
-	public AStar(Map<String, Cell> cells) {
+	public void start(Map<String, Cell> cells) {
+		assignVariables(cells);
+		pathFind();
+	}
+	
+	public void assignVariables(Map<String, Cell> cells) {
 		this.cells = cells;
 		
 		for (Cell cell : this.cells.values()) {
@@ -34,7 +39,7 @@ public class AStar implements Algorithms {
 		closedCells.add(target);
 	}
 	
-	public void start() {
+	public void pathFind() {
 		while (!found) {
 			Cell checkingCell = getLowestFScore();
 
@@ -76,14 +81,14 @@ public class AStar implements Algorithms {
 					}
 					
 					for (Cell c : path) {
-						c.changeType(CellType.PATH);
+						c.changeType(CellType.PATH, false);
 					}
 					
 					break;
 				}
 				
 				if (neighbor.getCellType() == CellType.EMPTY) {
-					neighbor.changeType(CellType.OPEN);
+					neighbor.changeType(CellType.OPEN, false);
 					openCells.add(neighbor);
 				}
 			}
@@ -110,7 +115,7 @@ public class AStar implements Algorithms {
 		
 		this.openCells.remove(lowest);
 		this.closedCells.add(lowest);
-		lowest.changeType(CellType.CLOSE);
+		lowest.changeType(CellType.CLOSE, false);
 		return lowest;
 	}
 

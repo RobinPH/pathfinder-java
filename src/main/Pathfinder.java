@@ -16,7 +16,7 @@ public class Pathfinder {
 	private int WIDTH;
 	private int HEIGHT;
 	private int CELL_SIZE;
-	private Map<String, Cell> cells;
+	private Cells cells;
 	private boolean allowedDiagonals = false;
 	private List<Algorithms> algorithms = new ArrayList<Algorithms>();
 	
@@ -26,18 +26,18 @@ public class Pathfinder {
 		this.CELL_SIZE = cellSize;
 		
 		Cells cells = new Cells(width, height);
-		this.cells = cells.get();
+		this.cells = cells;
 		
-		algorithms.add(new AStar(this.cells));
 		PathfindingGUI gui = new PathfindingGUI(this);
 	}
 	
 	public void algoStart() {
-		algorithms.get(0).setAllowedDiagonals(true);
-		algorithms.get(0).start();
+		algorithms.add(new AStar());
+		algorithms.get(0).setAllowedDiagonals(false);
+		algorithms.get(0).start(this.cells.get());
 	}
 	
-	public Map<String, Cell> getCells() {
+	public Cells getCells() {
 		return this.cells;
 	}
 	

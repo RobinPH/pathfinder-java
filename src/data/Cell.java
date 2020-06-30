@@ -56,6 +56,11 @@ public class Cell {
 		return getColor(getHexColor());
 	}
 	
+	public void changePosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public List<Cell> getNeighbors(Map<String, Cell> cells, Cell targetNode, boolean allowedDiagonals) {
 		List<Cell> neighbors = new ArrayList<Cell>();
 		
@@ -108,7 +113,7 @@ public class Cell {
 			case STARTING_NODE:
 				return "#66ccff";
 			case TARGET_NODE:
-				return "#66ccff";
+				return "#66cc00";
 			case WALL:
 				return "#262728";
 			case PATH:
@@ -123,9 +128,9 @@ public class Cell {
 		return Color.decode(hex);
 	}
 	
-	public void changeType(CellType cellType) {
-		if (this.cellType == CellType.STARTING_NODE) return;
-		if (this.cellType == CellType.TARGET_NODE) return;
+	public void changeType(CellType cellType, boolean override) {
+		if (this.cellType == CellType.STARTING_NODE && !override) return;
+		if (this.cellType == CellType.TARGET_NODE && !override) return;
 		if (cellType == CellType.WALL ) {
 			this.setGCost(0);
 			this.hCost = Double.MAX_VALUE;

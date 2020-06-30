@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -20,6 +21,9 @@ import data.Cells;
 public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
 	private Graphics graphics;
 	private Pathfinder p;
+	private boolean mousePressed = false;
+	private boolean mouseDragging = false;
+	private Cell cellPressed;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -50,7 +54,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	}
 	
 	public void drawAllCell() {
-		for (Cell cell : p.getCells().values()) {
+		for (Cell cell : p.getCells().get().values()) {
 			drawCell(cell);
 		}
 	}
@@ -82,9 +86,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 -1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1));
 		return this;
 	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
+	
+	public String getKeyByEvent(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 		int cellSize = p.getCellSize();
@@ -93,11 +96,41 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
 		String key = Cells.positionToKey(cellX, cellY);
 		
-		try {
-			p.getCells().get(key).changeType(CellType.WALL);
-			draw();
-		} catch(Exception e1) {
-			System.out.println(e1);
+		return key;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		String key = getKeyByEvent(e);
+		this.mouseDragging = true;
+		
+		if (this.cellPressed != null) {
+			int x = e.getX();
+			int y = e.getY();
+			int cellSize = p.getCellSize();
+			
+			int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
+			int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
+			
+			if (this.cellPressed.getCellType() == CellType.STARTING_NODE) {
+				if (p.getCells().changeStartingNode(cellX, cellY)) {
+					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					draw();
+				}
+			} else if (this.cellPressed.getCellType() == CellType.TARGET_NODE) {
+				if (p.getCells().changeTargetNode(cellX, cellY)) {
+					this.cellPressed = p.getCells().getCell(cellX, cellY);
+					draw();
+				}
+			}
+		} else {
+			try {
+				Map<String, Cell> cells = p.getCells().get();
+				cells.get(key).changeType(CellType.WALL, false);
+				draw();
+			} catch(Exception e1) {
+				System.out.println(e1);
+			}
 		}
 	}
 
@@ -108,16 +141,11 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		int cellSize = p.getCellSize();
-		
-		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
-		int cellY = (y - (y % (cellSize + 2))) / (cellSize + 2);
-		String key = Cells.positionToKey(cellX, cellY);
+		String key = getKeyByEvent(e);
 		
 		try {
-			p.getCells().get(key).changeType(CellType.WALL);
+			Map<String, Cell> cells = p.getCells().get();
+			cells.get(key).changeType(CellType.WALL, false);
 			draw();
 		} catch(Exception e1) {
 			System.out.println(e1);
@@ -126,13 +154,23 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub		
+		this.mousePressed = true;
+		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
+		
 		setUpDrawingGraphics();
+		String key = getKeyByEvent(e);
+		
+		if (p.getCells().getCell(key).getCellType() == CellType.STARTING_NODE && this.mousePressed) {
+			System.out.println("Starting");
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
+		this.mousePressed = false;
+		this.mouseDragging = false;
+		this.cellPressed = null;
 	}
 
 	@Override
