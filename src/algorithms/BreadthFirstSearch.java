@@ -2,23 +2,25 @@ package algorithms;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import data.Cell;
 import data.CellType;
 import data.Cells;
+import main.foo;
 
 public class BreadthFirstSearch implements Algorithms {
-	private boolean allowedDiagonals;
 	private Cells cells;
 	private Cell start;
 	private Cell target;
+	private boolean allowedDiagonals;
 	private List<Cell> cellsToAnimate;
 	
 	public List<Cell> start(Cells cells) {
-		this.assignVariables(cells);
-		return this.pathFind();
+		assignVariables(cells);
+		return pathFind();
 	}
 	
 	public void assignVariables(Cells cells) {
@@ -26,54 +28,52 @@ public class BreadthFirstSearch implements Algorithms {
 		Map<String, Cell> _cells = this.cells.get();
 		
 		for (Cell cell : _cells.values()) {
-			if (cell.getCellType() == CellType.STARTING_NODE) this.start = cell;
-			if (cell.getCellType() == CellType.TARGET_NODE) this.target = cell;
+			if (cell.getCellType() == CellType.STARTING_NODE) start = cell;
+			if (cell.getCellType() == CellType.TARGET_NODE) target = cell;
 		}
 	}
 	
 	public List<Cell> pathFind() {
 		this.cellsToAnimate = new ArrayList<Cell>();
-		BFS(this.start);
-		return this.cellsToAnimate;
-	}
-	
-	public void BFS(Cell cell) {
-		Cell currentWorkingNode;
 		List<Cell> queue = new ArrayList<Cell>();
-		
-		queue.add(cell);
+		queue.add(this.start);
 		
 		while (!queue.isEmpty()) {
-			currentWorkingNode = queue.remove(0);
-			changeTypeAndAnimate(currentWorkingNode, CellType.CLOSE);
+			Cell checkingCell = queue.remove(0);
 			
-			List<Cell> neighbors = currentWorkingNode.getNeighbors(this.cells, this.allowedDiagonals);
+			changeTypeAndAnimate(checkingCell, CellType.CLOSE);
+			checkingCell.setVisited(true);
+
+			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, this.allowedDiagonals);
 			
-			for (Cell neighbor : neighbors) {
+			for (Cell neighbor : currentNeighbors) {
 				if (neighbor.isVisited()) continue;
 				
-				queue.add(neighbor);
+				if (neighbor.getParent() == null) {
+					neighbor.setParent(checkingCell);
+				}
+   
 				
-				if (neighbor == this.target) {
-					Cell parent = currentWorkingNode;
+				if (neighbor == target) {
 					List<Cell> path = new ArrayList<Cell>();
 					
-					while (parent.getCellType() != CellType.STARTING_NODE) {
+					for (Cell parent = neighbor; parent.getCellType() != CellType.STARTING_NODE; parent = parent.getParent()) 
 						path.add(parent);
-						parent = parent.getParent();
-					}
+					
 					Collections.reverse(path);
-					for (Cell c : path) {
-						changeTypeAndAnimate(c, CellType.PATH);
-					}
-					return;
+					
+					for (Cell c : path) changeTypeAndAnimate(c, CellType.PATH);
+					
+					queue.clear();
+					break;
 				}
 				
-				neighbor.setParent(currentWorkingNode);
-				neighbor.setVisited(true);
 				changeTypeAndAnimate(neighbor, CellType.OPEN);
+				queue.add(neighbor);
 			}
 		}
+		
+		return this.cellsToAnimate;
 	}
 	
 	public void changeTypeAndAnimate(Cell cell, CellType cellType) {
@@ -86,6 +86,7 @@ public class BreadthFirstSearch implements Algorithms {
 		}
 	}
 
+	@Override
 	public void setAllowedDiagonals(boolean b) {
 		this.allowedDiagonals = b;
 	}

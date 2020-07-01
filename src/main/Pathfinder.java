@@ -1,15 +1,9 @@
 package main;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import algorithms.AStar;
-import algorithms.Algorithms;
 import algorithms.BreadthFirstSearch;
-import algorithms.DepthFirstSearch;
+import algorithms.Algorithms;
 import data.Cell;
 import data.Cells;
 import visuals.PathfindingGUI;
@@ -21,6 +15,7 @@ public class Pathfinder {
 	private Cells cells;
 	private boolean allowedDiagonals = false;
 	private boolean debug = false;
+	private Algorithms algo;
 
 	public Pathfinder(int width, int height, int cellSize, boolean debug) throws InterruptedException {
 		this.WIDTH = width;
@@ -37,7 +32,7 @@ public class Pathfinder {
 	public List<Cell> algoStart() {
 //		Algorithms algo = new DepthFirstSearch();
 //		Algorithms algo = new AStar();
-		Algorithms algo = new BreadthFirstSearch();
+		algo = new BreadthFirstSearch();
 		algo.setAllowedDiagonals(false);
 		return algo.start(this.cells);
 	}

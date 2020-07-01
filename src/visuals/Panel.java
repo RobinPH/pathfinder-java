@@ -31,6 +31,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private boolean isDeletingWall = false;
 	private boolean isCreatingWall = false;
 	private List<Cell> cellToAnimate;
+	public boolean doAnimate = true;
+	public boolean done = false;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -84,10 +86,13 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 		if (p.isOnDebug() && cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
 			graphics.setColor(Color.BLACK);
-			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 - 10); //G
-			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2); //H
-			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 + 10); //F
+//			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 - 10); //G
+//			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2); //H
+//			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 + 10); //F
 			graphics.drawString(String.format("%d %d", cell.getX(), cell.getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 20);
+			try {
+				graphics.drawString(String.format("%d %d", cell.getParent().getX(), cell.getParent().getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 10);
+			} catch (Exception e){}
 		}
 		
 		if (animated && this.doAnimate) {
@@ -146,6 +151,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 					this.cellPressed = currentCell;
 					if (rendered) {
 						this.cellToAnimate = p.algoStart();
+//						System.out.println(this.cellToAnimate.size());
 					}
 					this.prevDraggedCell = this.cellPressed;
 					this.cellToAnimate = null;
@@ -163,11 +169,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 			} else if (p.getCells().getCell(cellX, cellY).getCellType() == CellType.WALL && this.isDeletingWall) {
 				currentCell.changeType(CellType.EMPTY, false);
 				drawCell(currentCell, false);
-			} else {
-				if (this.isCreatingWall) {
-					currentCell.changeType(CellType.WALL, false);
-					drawCell(currentCell, false);
-				}
+			} else if (this.isCreatingWall) {
+				currentCell.changeType(CellType.WALL, false);
+				drawCell(currentCell, false);
 			}
 		}
 	}
@@ -229,8 +233,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 	}
-	public boolean doAnimate = true;
-	public boolean done = false;
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {

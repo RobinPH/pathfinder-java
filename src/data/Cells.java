@@ -39,6 +39,9 @@ public class Cells {
 		
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
+			cell.removeParent();
+			cell.setVisited(false);
+			
 			if (cellType != CellType.TARGET_NODE && cellType != CellType.WALL)
 				cell.changeType(CellType.EMPTY, true);
 			
@@ -56,6 +59,8 @@ public class Cells {
 		
 		for (Cell cell : this.cells.values()) {
 			CellType cellType = cell.getCellType();
+			cell.removeParent();
+			cell.setVisited(false);
 			
 			if (cellType != CellType.STARTING_NODE && cellType != CellType.WALL)
 				cell.changeType(CellType.EMPTY, true);
