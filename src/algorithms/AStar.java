@@ -48,6 +48,7 @@ public class AStar implements Algorithms {
 		cellsToAnimate = new ArrayList<Cell>();
 		while (!found) {
 			Cell checkingCell = getLowestFScore();
+			checkingCell.setToCurrentWorker(true);
 			if (checkingCell != null) changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 
 			List<Cell> currentNeighbors = checkingCell.getNeighbors(this.cells, this.allowedDiagonals);
@@ -95,6 +96,8 @@ public class AStar implements Algorithms {
 				if (neighbor.getCellType() == CellType.TARGET_NODE) {
 					found = true;
 					Cell parent = neighbor.getParent();
+					parent.setToCurrentWorker(false);
+					changeTypeAndAnimate(parent, parent.getCellType());
 					
 					List<Cell> path = new ArrayList<Cell>();
 					
@@ -117,13 +120,15 @@ public class AStar implements Algorithms {
 					openCells.add(neighbor);
 				}
 			}
+			
+			checkingCell.setToCurrentWorker(false);
+			if (checkingCell != null && !found) changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 		}
 		return this.cellsToAnimate;
 	}
 	
 	public void changeTypeAndAnimate(Cell cell, CellType cellType) {
 		cell.changeType(cellType, false);
-		
 		try {
 			cellsToAnimate.add((Cell) cell.clone());
 		} catch (CloneNotSupportedException e) {

@@ -39,6 +39,7 @@ public class DepthFirstSearch implements Algorithms {
 	
 	public boolean DFS(Cell cell) {
 		cell.setVisited(true);
+		cell.setToCurrentWorker(true);
 		changeTypeAndAnimate(cell, CellType.CLOSE);
 		
 		List<Cell> neighbors = cell.getNeighbors(this.cells, this.allowedDiagonals);
@@ -47,6 +48,10 @@ public class DepthFirstSearch implements Algorithms {
 		for (Cell neighbor : neighbors) {
 			if (neighbor == this.target) {
 				Cell parent = cell;
+				
+				cell.setToCurrentWorker(false);
+				changeTypeAndAnimate(cell, cell.getCellType());
+				
 				List<Cell> path = new ArrayList<Cell>();
 				
 				while (parent.getCellType() != CellType.STARTING_NODE) {
@@ -62,11 +67,22 @@ public class DepthFirstSearch implements Algorithms {
 			}
 		}
 		
+		
+		if (cell.getParent() != null) {
+			cell.getParent().setToCurrentWorker(false);
+			changeTypeAndAnimate(cell.getParent(), CellType.CLOSE);
+		}
+		
+		cell.setToCurrentWorker(false);
+		changeTypeAndAnimate(cell, CellType.CLOSE);
+		
 		for (Cell neighbor : neighbors) {
+			
 			if (neighbor.isVisited()) continue;
 			
 			neighbor.setParent(cell);
 			changeTypeAndAnimate(neighbor, CellType.OPEN);
+			
 			if (DFS(neighbor)) return true;
 		}
 		

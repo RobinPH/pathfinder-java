@@ -16,11 +16,16 @@ public class Cell implements Cloneable {
 	private List<Cell> neighbors;
 	private Cell parent;
 	private boolean visited = false;
+	private boolean currentWorker = false;
 	
 	public Cell(int x, int y, CellType cellType) {
 		this.x = x;
 		this.y = y;
 		this.cellType = cellType;
+	}
+	
+	public void setToCurrentWorker(boolean b) {
+		this.currentWorker = b;
 	}
 	
 	public void setVisited(boolean b) {
@@ -60,6 +65,7 @@ public class Cell implements Cloneable {
 	}
 	
 	public Color getColor() {
+		if (this.currentWorker) return Color.RED;
 		return getColor(getHexColor());
 	}
 	
@@ -124,7 +130,7 @@ public class Cell implements Cloneable {
 			case STARTING_NODE:
 				return "#66ccff";
 			case TARGET_NODE:
-				return "#66cc00";
+				return "#66ccff";
 			case WALL:
 				return "#262728";
 			case PATH:

@@ -3,8 +3,11 @@ package main;
 import java.util.List;
 
 import algorithms.BreadthFirstSearch;
+import algorithms.DepthFirstSearch;
+import algorithms.AStar;
 import algorithms.Algorithms;
 import data.Cell;
+import data.CellType;
 import data.Cells;
 import visuals.PathfindingGUI;
 
@@ -30,11 +33,23 @@ public class Pathfinder {
 	}
 	
 	public List<Cell> algoStart() {
-//		Algorithms algo = new DepthFirstSearch();
-//		Algorithms algo = new AStar();
+		clearCells();
+//		algo = new DepthFirstSearch();
+//		algo = new AStar();
 		algo = new BreadthFirstSearch();
 		algo.setAllowedDiagonals(false);
 		return algo.start(this.cells);
+	}
+	
+	public void clearCells() {
+		for (Cell c : this.cells.get().values()) {
+			CellType cellType = c.getCellType();
+			c.removeParent();
+			c.setVisited(false);
+			if (cellType == CellType.OPEN || cellType == CellType.CLOSE || cellType == CellType.PATH) {
+				c.changeType(CellType.EMPTY, true);
+			}
+		}
 	}
 	
 	public Cells getCells() {

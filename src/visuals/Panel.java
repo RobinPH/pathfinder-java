@@ -26,13 +26,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private boolean mousePressed = false;
 	private boolean mouseDragging = false;
 	private Cell cellPressed;
-	private boolean rendered = false;
 	private Cell prevDraggedCell;
 	private boolean isDeletingWall = false;
 	private boolean isCreatingWall = false;
 	private List<Cell> cellToAnimate;
-	public boolean doAnimate = true;
-	public boolean done = false;
+	public boolean doAnimate = false;
+	private boolean isFirstAnimationDone = false;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -97,7 +96,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (animated && this.doAnimate) {
 			try {
-				Thread.sleep(1000/60);
+				Thread.sleep(30);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -149,21 +148,21 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 				
 				if (p.getCells().changeStartingNode(cellX, cellY)) {
 					this.cellPressed = currentCell;
-					if (rendered) {
-						this.cellToAnimate = p.algoStart();
-//						System.out.println(this.cellToAnimate.size());
-					}
 					this.prevDraggedCell = this.cellPressed;
-					this.cellToAnimate = null;
+					
+					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart();
+					
+					this.doAnimate = false;
 					draw();
 				}
 			} else if (currentCellType == CellType.TARGET_NODE) {
 				if (p.getCells().changeTargetNode(cellX, cellY)) {
 					this.cellPressed = currentCell;
-					if (rendered) {
-						this.cellToAnimate = p.algoStart();
-					}
 					this.prevDraggedCell = this.cellPressed;
+					
+					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart();
+					
+					this.doAnimate = false;
 					draw();
 				}
 			} else if (p.getCells().getCell(cellX, cellY).getCellType() == CellType.WALL && this.isDeletingWall) {
@@ -195,7 +194,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (done) this.doAnimate = false;
+		this.doAnimate = false;
+		
 		this.mousePressed = true;
 		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
 		
@@ -238,13 +238,16 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case 32:
-				if (done) this.doAnimate = false;
-				if(!done) {
-					this.cellToAnimate = p.algoStart();
-					done = true;
+				this.doAnimate = !this.doAnimate;
+				if(this.cellToAnimate == null) this.cellToAnimate = p.algoStart();
+				
+				if (this.isFirstAnimationDone) {
+					p.clearCells(); 
+					drawAllCell(p.getCells().get().values(), false);
 				}
+				
 				draw();
-				this.rendered = true;
+				this.isFirstAnimationDone = true;
 				return;
 			default:
 				return;

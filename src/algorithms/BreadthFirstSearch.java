@@ -15,6 +15,7 @@ public class BreadthFirstSearch implements Algorithms {
 	private Cells cells;
 	private Cell start;
 	private Cell target;
+	private List<Cell> queue = new ArrayList<Cell>();
 	private boolean allowedDiagonals;
 	private List<Cell> cellsToAnimate;
 	
@@ -31,16 +32,16 @@ public class BreadthFirstSearch implements Algorithms {
 			if (cell.getCellType() == CellType.STARTING_NODE) start = cell;
 			if (cell.getCellType() == CellType.TARGET_NODE) target = cell;
 		}
+		queue.add(this.start);
 	}
 	
 	public List<Cell> pathFind() {
-		this.cellsToAnimate = new ArrayList<Cell>();
-		List<Cell> queue = new ArrayList<Cell>();
-		queue.add(this.start);
+		cellsToAnimate = new ArrayList<Cell>();
 		
 		while (!queue.isEmpty()) {
 			Cell checkingCell = queue.remove(0);
 			
+			checkingCell.setToCurrentWorker(true);
 			changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 			checkingCell.setVisited(true);
 
@@ -53,9 +54,11 @@ public class BreadthFirstSearch implements Algorithms {
 					neighbor.setParent(checkingCell);
 				}
    
-				
 				if (neighbor == target) {
 					List<Cell> path = new ArrayList<Cell>();
+					
+					neighbor.getParent().setToCurrentWorker(false);
+					changeTypeAndAnimate(neighbor.getParent(), neighbor.getParent().getCellType());
 					
 					for (Cell parent = neighbor; parent.getCellType() != CellType.STARTING_NODE; parent = parent.getParent()) 
 						path.add(parent);
@@ -68,9 +71,14 @@ public class BreadthFirstSearch implements Algorithms {
 					break;
 				}
 				
-				changeTypeAndAnimate(neighbor, CellType.OPEN);
-				queue.add(neighbor);
+				if (neighbor.getCellType() == CellType.EMPTY) {
+					changeTypeAndAnimate(neighbor, CellType.OPEN);
+					queue.add(neighbor);
+				}
 			}
+			
+			checkingCell.setToCurrentWorker(false);
+			if (checkingCell != null && !queue.isEmpty()) changeTypeAndAnimate(checkingCell, CellType.CLOSE);
 		}
 		
 		return this.cellsToAnimate;
