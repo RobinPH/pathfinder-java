@@ -2,6 +2,7 @@ package algorithms;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class AStar implements Algorithms {
 			
 			for (Cell neighbor : currentNeighbors) {
 				double newGCost = checkingCell.getGCost() + Math.hypot(checkingCell.getX() - neighbor.getX(), checkingCell.getY() - neighbor.getY());
-				double newHCost = this.allowedDiagonals ? Math.hypot(target.getX() - neighbor.getX(), target.getY() - neighbor.getY()) : Math.abs(checkingCell.getX() - target.getX()) + Math.abs(checkingCell.getY() - target.getY()) - 1;
+				double newHCost = this.allowedDiagonals ? Math.hypot(target.getX() - neighbor.getX(), target.getY() - neighbor.getY()) : Math.abs(neighbor.getX() - target.getX()) + Math.abs(neighbor.getY() - target.getY());
 				
 				if (neighbor.getParent() == null) {
 					neighbor.setParent(checkingCell);
@@ -78,6 +79,18 @@ public class AStar implements Algorithms {
 						}
 					}
 				}
+			}
+			
+			Collections.sort(currentNeighbors, new Comparator<Cell>() {
+				@Override
+				public int compare(Cell c1, Cell c2) {
+					if (c1.getHCost() > c2.getHCost()) return 1;
+					if (c2.getHCost() > c1.getHCost()) return -1;
+					return 0;
+				}
+			});
+			
+			for (Cell neighbor : currentNeighbors) {
 				
 				if (neighbor.getCellType() == CellType.TARGET_NODE) {
 					found = true;
