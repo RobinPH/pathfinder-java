@@ -34,7 +34,8 @@ public class Pathfinder {
 	}
 	
 	public List<Cell> algoStart() {
-		Algorithms algo = new DepthFirstSearch();
+//		Algorithms algo = new DepthFirstSearch();
+		Algorithms algo = new AStar();
 		algo.setAllowedDiagonals(false);
 		return algo.start(this.cells);
 	}

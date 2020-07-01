@@ -45,22 +45,28 @@ public class DepthFirstSearch implements Algorithms {
 		Collections.shuffle(neighbors);
 		
 		for (Cell neighbor : neighbors) {
+			if (neighbor == this.target) {
+				Cell parent = cell;
+				List<Cell> path = new ArrayList<Cell>();
+				
+				while (parent.getCellType() != CellType.STARTING_NODE) {
+					path.add(parent);
+					parent = parent.getParent();
+				}
+				Collections.reverse(path);
+				for (Cell c : path) {
+					changeTypeAndAnimate(c, CellType.PATH);
+				}
+				
+				return true;
+			}
+		}
+		
+		for (Cell neighbor : neighbors) {
 			if (neighbor.isVisited()) continue;
 			
 			neighbor.setParent(cell);
-			
-			if (neighbor == this.target) {
-				Cell parent = neighbor.getParent();
-				
-				while (parent.getCellType() != CellType.STARTING_NODE) {
-					changeTypeAndAnimate(parent, CellType.PATH);
-					parent = parent.getParent();
-				}
-				return true;
-			}
-			
 			if (DFS(neighbor)) return true;
-			cell.setVisited(false);
 		}
 		
 		return false;

@@ -1,6 +1,7 @@
 package algorithms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +89,8 @@ public class AStar implements Algorithms {
 						path.add(parent);
 						parent = parent.getParent();
 					}
+					
+					Collections.reverse(path);
 					
 					for (Cell c : path) {
 						changeTypeAndAnimate(c, CellType.PATH);

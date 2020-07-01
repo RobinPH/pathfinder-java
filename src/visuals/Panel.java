@@ -91,7 +91,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (animated && this.doAnimate) {
 			try {
-				Thread.sleep(1);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
