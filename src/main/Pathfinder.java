@@ -32,12 +32,25 @@ public class Pathfinder {
 		PathfindingGUI gui = new PathfindingGUI(this);
 	}
 	
-	public List<Cell> algoStart() {
-		clearCells();
-//		algo = new DepthFirstSearch();
-//		algo = new AStar();
-		algo = new BreadthFirstSearch();
-		algo.setAllowedDiagonals(false);
+	public List<Cell> algoStart(String algorithm, boolean allowedDiagonals) {
+		clearCells(); 
+		
+		switch (algorithm) {
+			case "A* Search":
+				algo = new AStar();
+				break;
+			case "Depth First Search":
+				algo = new DepthFirstSearch();
+				break;
+			case "Breadth First Search":
+				algo = new BreadthFirstSearch();
+				break;
+			default:
+				algo = new AStar();
+				break;
+		}
+		
+		algo.setAllowedDiagonals(algorithm == "Breadth First Search" ? false : allowedDiagonals);
 		return algo.start(this.cells);
 	}
 	

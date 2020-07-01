@@ -1,8 +1,13 @@
 package visuals;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -12,7 +17,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import main.Pathfinder;
 import data.Cell;
@@ -20,7 +27,7 @@ import data.CellType;
 import data.Cells;
 
 @SuppressWarnings("serial")
-public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
+public class Panel extends JPanel implements MouseListener, MouseMotionListener, KeyListener, ItemListener {
 	private Graphics graphics;
 	private Pathfinder p;
 	private boolean mousePressed = false;
@@ -32,6 +39,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private List<Cell> cellToAnimate;
 	public boolean doAnimate = false;
 	private boolean isFirstAnimationDone = false;
+	private int headerHeight = 50;
+	private JComboBox<String> algoDropdown;
+	private JRadioButton allowDiagonalsButton;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -78,19 +88,19 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		if (graphics == null) return;
 		
 		graphics.setColor(Color.LIGHT_GRAY);
-		graphics.drawRect(x, y, cellSize + 2, cellSize + 2);
+		graphics.drawRect(x, y + this.headerHeight, cellSize + 2, cellSize + 2);
 		
 		graphics.setColor(cellColor);
-		graphics.fillRect(x + 1, y + 1, cellSize + 1, cellSize + 1);
+		graphics.fillRect(x + 1, y + 1 + this.headerHeight, cellSize + 1, cellSize + 1);
 
 		if (p.isOnDebug() && cell.getCellType() != CellType.EMPTY && cell.getCellType() != CellType.WALL) {
 			graphics.setColor(Color.BLACK);
-//			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 - 10); //G
-//			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2); //H
-//			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 + 10); //F
-			graphics.drawString(String.format("%d %d", cell.getX(), cell.getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 20);
+//			graphics.drawString(Double.toString(Math.round(cell.getGCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 - 10 + this.headerHeight); //G
+//			graphics.drawString(Double.toString(Math.round(cell.getHCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 + this.headerHeight); //H
+//			graphics.drawString(Double.toString(Math.round(cell.getFCost() * 100)), x + cellSize / 2 - 15, y + cellSize / 2 + 10 + this.headerHeight); //F
+			graphics.drawString(String.format("%d %d", cell.getX(), cell.getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 20 + this.headerHeight);
 			try {
-				graphics.drawString(String.format("%d %d", cell.getParent().getX(), cell.getParent().getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 10);
+				graphics.drawString(String.format("%d %d", cell.getParent().getX(), cell.getParent().getY()), x + cellSize / 2 - 15, y + cellSize / 2 + 10 + this.headerHeight);
 			} catch (Exception e){}
 		}
 		
@@ -103,17 +113,38 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 	
+	public String getSelectedAlgo() {
+		return String.valueOf(this.algoDropdown.getSelectedItem());
+	}
+	
+	public boolean isDiagonalAllowed() {
+		return allowDiagonalsButton.isSelected();
+	}
+	
 	public JPanel getJPanel() {
 		int cellSize = p.getCellSize();
 		int WIDTH = p.getWidth();
 		int HEIGHT = p.getHeight();
-		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 -1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1));
+		
+		String[] choices = { "A* Search", "Depth First Search", "Breadth First Search" };
+		
+        algoDropdown = new JComboBox<String>(choices);
+		algoDropdown.setMaximumSize(algoDropdown.getPreferredSize());
+		algoDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(algoDropdown);
+		
+		algoDropdown.addItemListener(this);
+		
+		allowDiagonalsButton = new JRadioButton("Allow Diagonals");
+		add(allowDiagonalsButton);
+		
+		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 - 1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1 + this.headerHeight));
 		return this;
 	}
 	
 	public String getKeyByEvent(MouseEvent e) {
 		int x = e.getX();
-		int y = e.getY();
+		int y = e.getY() - this.headerHeight;
 		int cellSize = p.getCellSize();
 		
 		int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
@@ -130,7 +161,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (this.cellPressed != null) {
 			int x = e.getX();
-			int y = e.getY();
+			int y = e.getY() - this.headerHeight;
 			int cellSize = p.getCellSize();
 			
 			int cellX = (x - (x % (cellSize + 2))) / (cellSize + 2);
@@ -150,7 +181,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 					this.cellPressed = currentCell;
 					this.prevDraggedCell = this.cellPressed;
 					
-					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart();
+					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart(this.getSelectedAlgo(), this.isDiagonalAllowed());
 					
 					this.doAnimate = false;
 					draw();
@@ -160,7 +191,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 					this.cellPressed = currentCell;
 					this.prevDraggedCell = this.cellPressed;
 					
-					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart();
+					if (this.isFirstAnimationDone) this.cellToAnimate = p.algoStart(this.getSelectedAlgo(), this.isDiagonalAllowed());
 					
 					this.doAnimate = false;
 					draw();
@@ -184,6 +215,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	public void mouseClicked(MouseEvent e) {
 		String key = getKeyByEvent(e);
 		Cell cell = p.getCells().get().get(key);
+		if (cell == null) return;
 		if (cell.getCellType() == CellType.WALL ) {
 			cell.changeType(CellType.EMPTY, false);
 		} else if (cell.getCellType() == CellType.EMPTY ) {
@@ -198,8 +230,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		this.mousePressed = true;
 		this.cellPressed = p.getCells().getCell(getKeyByEvent(e));
+		if (this.cellPressed == null) return;
 		
-		if (p.getCells().getCell(getKeyByEvent(e)).getCellType() == CellType.WALL) {
+		if (this.cellPressed.getCellType() == CellType.WALL) {
 			this.isDeletingWall = true;
 		} else {
 			this.isCreatingWall = true;
@@ -239,7 +272,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		switch (e.getKeyCode()) {
 			case 32:
 				this.doAnimate = !this.doAnimate;
-				if(this.cellToAnimate == null) this.cellToAnimate = p.algoStart();
+				if(this.cellToAnimate == null) this.cellToAnimate = p.algoStart(this.getSelectedAlgo(), this.isDiagonalAllowed());
 				
 				if (this.isFirstAnimationDone) {
 					p.clearCells(); 
@@ -257,5 +290,11 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
+	}
+
+	
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		System.out.println(e.getItem().toString());
 	}
 }
