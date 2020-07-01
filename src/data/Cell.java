@@ -78,6 +78,7 @@ public class Cell implements Cloneable {
 				if (j < 0 || j >= cells.getWidth()) continue;
 				if (!allowedDiagonals && Math.abs(j - this.x) + Math.abs(i - this.y) == 2) continue;
 				Cell neighbor = cells.get().get(Cells.positionToKey(j, i));
+				if (neighbor == this.parent) continue;
 				
 				if (neighbor.getCellType() == CellType.WALL) continue;
 				
