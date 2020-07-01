@@ -33,7 +33,8 @@ public class Cells {
 	}
 	
 	public boolean changeStartingNode(int x, int y) {
-		if (this.getCell(x, y).getCellType() == CellType.TARGET_NODE)
+		if (this.getCell(x, y).getCellType() == CellType.TARGET_NODE
+				|| this.getCell(x, y).getCellType() == CellType.WALL)
 			return false;
 		
 		for (Cell cell : this.cells.values()) {
@@ -49,7 +50,8 @@ public class Cells {
 	}
 	
 	public boolean changeTargetNode(int x, int y) {
-		if (this.getCell(x, y).getCellType() == CellType.STARTING_NODE)
+		if (this.getCell(x, y).getCellType() == CellType.STARTING_NODE
+				|| this.getCell(x, y).getCellType() == CellType.WALL)
 			return false;
 		
 		for (Cell cell : this.cells.values()) {

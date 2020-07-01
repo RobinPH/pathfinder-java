@@ -92,7 +92,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (animated && this.doAnimate) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000/60);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -180,14 +180,13 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		String key = getKeyByEvent(e);
-		
-		try {
-			Map<String, Cell> cells = p.getCells().get();
-			cells.get(key).changeType(CellType.WALL, false);
-			draw();
-		} catch(Exception e1) {
-			System.out.println(e1);
+		Cell cell = p.getCells().get().get(key);
+		if (cell.getCellType() == CellType.WALL ) {
+			cell.changeType(CellType.EMPTY, false);
+		} else if (cell.getCellType() == CellType.EMPTY ) {
+			cell.changeType(CellType.WALL, false);
 		}
+		draw();
 	}
 
 	@Override
