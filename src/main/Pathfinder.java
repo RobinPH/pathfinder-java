@@ -8,6 +8,7 @@ import java.util.Map;
 
 import algorithms.AStar;
 import algorithms.Algorithms;
+import algorithms.BreadthFirstSearch;
 import algorithms.DepthFirstSearch;
 import data.Cell;
 import data.Cells;
@@ -35,7 +36,8 @@ public class Pathfinder {
 	
 	public List<Cell> algoStart() {
 //		Algorithms algo = new DepthFirstSearch();
-		Algorithms algo = new AStar();
+//		Algorithms algo = new AStar();
+		Algorithms algo = new BreadthFirstSearch();
 		algo.setAllowedDiagonals(false);
 		return algo.start(this.cells);
 	}

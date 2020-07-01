@@ -9,7 +9,7 @@ import data.Cell;
 import data.CellType;
 import data.Cells;
 
-public class DepthFirstSearch implements Algorithms {
+public class BreadthFirstSearch implements Algorithms {
 	private boolean allowedDiagonals;
 	private Cells cells;
 	private Cell start;
@@ -33,44 +33,47 @@ public class DepthFirstSearch implements Algorithms {
 	
 	public List<Cell> pathFind() {
 		this.cellsToAnimate = new ArrayList<Cell>();
-		DFS(this.start);
+		BFS(this.start);
 		return this.cellsToAnimate;
 	}
 	
-	public boolean DFS(Cell cell) {
-		cell.setVisited(true);
-		changeTypeAndAnimate(cell, CellType.CLOSE);
+	public void BFS(Cell cell) {
+		Cell currentWorkingNode;
+		List<Cell> queue = new ArrayList<Cell>();
 		
-		List<Cell> neighbors = cell.getNeighbors(this.cells, this.allowedDiagonals);
-		Collections.shuffle(neighbors);
+		queue.add(cell);
 		
-		for (Cell neighbor : neighbors) {
-			if (neighbor == this.target) {
-				Cell parent = cell;
-				List<Cell> path = new ArrayList<Cell>();
+		while (!queue.isEmpty()) {
+			currentWorkingNode = queue.remove(0);
+			changeTypeAndAnimate(currentWorkingNode, CellType.CLOSE);
+			
+			List<Cell> neighbors = currentWorkingNode.getNeighbors(this.cells, this.allowedDiagonals);
+			
+			for (Cell neighbor : neighbors) {
+				if (neighbor.isVisited()) continue;
 				
-				while (parent.getCellType() != CellType.STARTING_NODE) {
-					path.add(parent);
-					parent = parent.getParent();
-				}
-				Collections.reverse(path);
-				for (Cell c : path) {
-					changeTypeAndAnimate(c, CellType.PATH);
+				queue.add(neighbor);
+				
+				if (neighbor == this.target) {
+					Cell parent = currentWorkingNode;
+					List<Cell> path = new ArrayList<Cell>();
+					
+					while (parent.getCellType() != CellType.STARTING_NODE) {
+						path.add(parent);
+						parent = parent.getParent();
+					}
+					Collections.reverse(path);
+					for (Cell c : path) {
+						changeTypeAndAnimate(c, CellType.PATH);
+					}
+					return;
 				}
 				
-				return true;
+				neighbor.setParent(currentWorkingNode);
+				neighbor.setVisited(true);
+				changeTypeAndAnimate(neighbor, CellType.OPEN);
 			}
 		}
-		
-		for (Cell neighbor : neighbors) {
-			if (neighbor.isVisited()) continue;
-			
-			neighbor.setParent(cell);
-			changeTypeAndAnimate(neighbor, CellType.OPEN);
-			if (DFS(neighbor)) return true;
-		}
-		
-		return false;
 	}
 	
 	public void changeTypeAndAnimate(Cell cell, CellType cellType) {
@@ -86,5 +89,4 @@ public class DepthFirstSearch implements Algorithms {
 	public void setAllowedDiagonals(boolean b) {
 		this.allowedDiagonals = b;
 	}
-
 }
