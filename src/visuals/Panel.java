@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import main.Pathfinder;
 import data.Cell;
@@ -42,6 +44,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 	private int headerHeight = 50;
 	private JComboBox<String> algoDropdown;
 	private JRadioButton allowDiagonalsButton;
+	private JTextField animationSpeedTextField;
 	
 	public Panel(Pathfinder p) {
 		this.p = p;
@@ -106,7 +109,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		if (animated && this.doAnimate) {
 			try {
-				Thread.sleep(30);
+				Thread.sleep(1000 / getAnimationSpeed());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -121,13 +124,27 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		return allowDiagonalsButton.isSelected();
 	}
 	
+	public int getAnimationSpeed() {
+		int speed = 60; // Default speed
+		try {
+			speed = Integer.parseInt(this.animationSpeedTextField.getText());
+		} catch (Exception e) {
+			this.animationSpeedTextField.setText(Integer.toString(speed));
+		}
+		
+		return speed;
+	}
+	
 	public JPanel getJPanel() {
 		int cellSize = p.getCellSize();
 		int WIDTH = p.getWidth();
 		int HEIGHT = p.getHeight();
 		
-		String[] choices = { "A* Search", "Depth First Search", "Breadth First Search" };
 		
+		allowDiagonalsButton = new JRadioButton("Allow Diagonals");
+		add(allowDiagonalsButton);
+		
+		String[] choices = { "A* Search", "Depth First Search", "Breadth First Search" };
         algoDropdown = new JComboBox<String>(choices);
 		algoDropdown.setMaximumSize(algoDropdown.getPreferredSize());
 		algoDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -135,8 +152,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener,
 		
 		algoDropdown.addItemListener(this);
 		
-		allowDiagonalsButton = new JRadioButton("Allow Diagonals");
-		add(allowDiagonalsButton);
+		
+		JLabel label = new JLabel("Animation Speed (Cells per second)");
+		add(label);
+		animationSpeedTextField = new JTextField("60");
+		this.animationSpeedTextField.setPreferredSize(new Dimension(50, 20));
+		add(animationSpeedTextField);
 		
 		setPreferredSize(new Dimension(cellSize * WIDTH + (WIDTH + 1) * 2 - 1, cellSize * HEIGHT + (HEIGHT + 1) * 2 - 1 + this.headerHeight));
 		return this;
